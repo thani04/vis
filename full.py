@@ -10,6 +10,28 @@ from scipy.spatial import ConvexHull
 import alphashape
 from shapely.geometry import MultiPoint
 
+# ----------------------------
+# CONFIG
+# ----------------------------
+video_files = {
+    "APPAL_2a": "APPAL_2a_hull_area.mp4",
+    "FOODI_2a": "FOODI_2a_hull_area.mp4",
+    "MARCH_12a": "MARCH_12a_hull_area.mp4",
+    "NANN_3a": "NANN_3a_hull_area.mp4",
+    "SHREK_3a": "SHREK_3a_hull_area.mp4",
+    "SIMPS_19a": "SIMPS_19a_hull_area.mp4"
+}
+base_url = "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/processed%20hull%20area%20overlay/"
+
+# ----------------------------
+# SECTION: VIDEO DISPLAY
+# ----------------------------
+st.title("🎬 Gaze Hull Visualization")
+
+selected_video = st.selectbox("🎥 เลือกวิดีโอ", list(video_files.keys()))
+video_url = base_url + video_files[selected_video]
+st.video(video_url)
+
 # Helper function to load gaze data
 @st.cache_data
 def load_gaze_data(mat_files):
@@ -104,48 +126,48 @@ if 'data_processed' not in st.session_state:
 if 'current_frame' not in st.session_state:
     st.session_state.current_frame = 0
 
-# File upload form
-with st.form(key='file_upload_form'):
-    uploaded_files = st.file_uploader("Upload your `.mat` gaze data and a `.mp4` video", accept_multiple_files=True)
-    submit_button = st.form_submit_button("Submit Files")
+# # File upload form
+# with st.form(key='file_upload_form'):
+#     uploaded_files = st.file_uploader("Upload your `.mat` gaze data and a `.mp4` video", accept_multiple_files=True)
+#     submit_button = st.form_submit_button("Submit Files")
 
-if submit_button:
-    if uploaded_files:
-        mat_files = [f for f in uploaded_files if f.name.endswith('.mat')]
-        mp4_files = [f for f in uploaded_files if f.name.endswith('.mp4')]
+# if submit_button:
+#     if uploaded_files:
+#         mat_files = [f for f in uploaded_files if f.name.endswith('.mat')]
+#         mp4_files = [f for f in uploaded_files if f.name.endswith('.mp4')]
 
-        if not mat_files or not mp4_files:
-            st.warning("Please upload at least one `.mat` file and one `.mp4` video.")
-        else:
-            st.success(f"✅ Loaded {len(mat_files)} .mat files and 1 video.")
+#         if not mat_files or not mp4_files:
+#             st.warning("Please upload at least one `.mat` file and one `.mp4` video.")
+#         else:
+#             st.success(f"✅ Loaded {len(mat_files)} .mat files and 1 video.")
 
-            temp_dir = "temp_data"
-            os.makedirs(temp_dir, exist_ok=True)
+#             temp_dir = "temp_data"
+#             os.makedirs(temp_dir, exist_ok=True)
 
-            mat_paths = []
-            for file in mat_files:
-                path = os.path.join(temp_dir, file.name)
-                with open(path, "wb") as f:
-                    f.write(file.getbuffer())
-                mat_paths.append(path)
+#             mat_paths = []
+#             for file in mat_files:
+#                 path = os.path.join(temp_dir, file.name)
+#                 with open(path, "wb") as f:
+#                     f.write(file.getbuffer())
+#                 mat_paths.append(path)
 
-            video_file = mp4_files[0]
-            video_path = os.path.join(temp_dir, video_file.name)
-            with open(video_path, "wb") as f:
-                f.write(video_file.getbuffer())
+#             video_file = mp4_files[0]
+#             video_path = os.path.join(temp_dir, video_file.name)
+#             with open(video_path, "wb") as f:
+#                 f.write(video_file.getbuffer())
 
-            with st.spinner("Processing gaze data and computing hull areas..."):
-                gaze_data = load_gaze_data(mat_paths)
-                df, video_frames = process_video_analysis(gaze_data, video_path)
+#             with st.spinner("Processing gaze data and computing hull areas..."):
+#                 gaze_data = load_gaze_data(mat_paths)
+#                 df, video_frames = process_video_analysis(gaze_data, video_path)
 
-                if df is not None:
-                    st.session_state.df = df
-                    st.session_state.video_frames = video_frames
-                    st.session_state.csv_path = os.path.join(temp_dir, "analysis.csv")
-                    df.to_csv(st.session_state.csv_path)
-                    st.session_state.data_processed = True
-                    st.session_state.current_frame = int(df.index.min())
-                    st.success("✅ Data processing completed successfully!")
+#                 if df is not None:
+#                     st.session_state.df = df
+#                     st.session_state.video_frames = video_frames
+#                     st.session_state.csv_path = os.path.join(temp_dir, "analysis.csv")
+#                     df.to_csv(st.session_state.csv_path)
+#                     st.session_state.data_processed = True
+#                     st.session_state.current_frame = int(df.index.min())
+#                     st.success("✅ Data processing completed successfully!")
 
 # Display analysis
 if st.session_state.data_processed:
