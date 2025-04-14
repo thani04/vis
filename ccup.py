@@ -25,7 +25,8 @@ video_files = {
 video_base_url = "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/Clips%20(small%20size)/"
 mat_api_base = "https://api.github.com/repos/nutteerabn/InfoVisual/contents/clips_folder"
 
-# ========== DOWNLOAD ==========
+# ========== FUNCTIONS ==========
+
 def download_file(url, save_path):
     response = requests.get(url)
     if response.status_code == 200:
@@ -57,7 +58,6 @@ def download_mat_files(mat_urls, temp_dir, limit=5):
             st.warning(f"⚠️ Failed to download {name}")
     return mat_paths
 
-# ========== GAZE & HULL ==========
 @st.cache_data
 def load_gaze_data(mat_files):
     data = []
@@ -70,7 +70,7 @@ def load_gaze_data(mat_files):
         valid = (x != -32768) & (y != -32768)
         x = x[valid]
         y = y[valid]
-        t = t[valid] - t[valid][0]
+        t = t[valid] - t[0]
         x_norm = x / np.max(x)
         y_norm = y / np.max(y)
         data.append((x_norm, y_norm, t))
@@ -142,32 +142,26 @@ def get_frame_at(video_path, frame_num):
     cap.release()
     return frame if ret else None
 
-def plot_hull_shapes_chart(gaze_points, alpha=0.007):
+def plot_mini_hull_chart(gaze_points, alpha=0.007):
     if len(gaze_points) < 3:
-        st.info("Not enough points to plot hull.")
         return
-
     points = np.array(gaze_points)
-    fig, ax = plt.subplots()
-
+    fig, ax = plt.subplots(figsize=(2, 2))
     try:
         hull = ConvexHull(points)
         for simplex in hull.simplices:
-            ax.plot(points[simplex, 0], points[simplex, 1], 'g-', lw=2, label="Convex" if 'Convex' not in ax.get_legend_handles_labels()[1] else "")
+            ax.plot(points[simplex, 0], points[simplex, 1], 'g-', lw=1)
     except:
         pass
-
     try:
         concave = alphashape.alphashape(points, alpha)
         if concave.geom_type == 'Polygon':
             x, y = concave.exterior.xy
-            ax.plot(x, y, 'b--', lw=2, label="Concave")
+            ax.plot(x, y, 'b--', lw=1)
     except:
         pass
-
-    ax.set_title("Convex vs Concave Hull Shape", fontsize=10)
     ax.set_xticks([]), ax.set_yticks([])
-    ax.legend(loc='lower right', fontsize=8)
+    ax.set_title("Hull", fontsize=8)
     st.pyplot(fig)
 
 # ========== APP ==========
@@ -229,10 +223,6 @@ if st.session_state.data_processed:
                 gy = int(np.clip(y_norm[i], 0, 1) * (frame.shape[0] - 1))
                 gaze_points_this_frame.append((gx, gy))
 
-        # 🌀 Mini chart Hull Shape
-        st.markdown("### 🌀 Gaze Hull Shape (Per Frame)")
-        plot_hull_shapes_chart(gaze_points_this_frame)
-
     col1, col2, col3 = st.columns([1, 4, 1])
     with col1:
         if st.button("Previous <10"):
@@ -267,3 +257,4 @@ if st.session_state.data_processed:
         if frame is not None:
             st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption=f"Frame {current_frame}", use_container_width=True)
         st.metric("Focus-Concentration Score", f"{df.loc[current_frame, 'F-C score']:.3f}")
+        plot_mini_hull_chart(gaze_points_this_frame)
