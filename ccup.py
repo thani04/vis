@@ -160,7 +160,7 @@ def plot_mini_hull_chart(gaze_points, alpha=0.007):
             ax.plot(x, y, 'b--', lw=1)
     except:
         pass
-    ax.set_xticks([]), ax.set_yticks([])
+    # ax.set_xticks([]), ax.set_yticks([])
     ax.set_title("Hull", fontsize=8)
     st.pyplot(fig)
 
