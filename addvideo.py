@@ -247,13 +247,12 @@ if st.session_state.data_processed:
     col_chart, col_right = st.columns([2, 1])
     with col_chart:
         st.altair_chart(chart + rule, use_container_width=True)
-
+    
     with col_right:
         frame = get_frame_at(video_path, current_frame)
+    
+        # 🖍 แสดงภาพ overlay hull บนสุด
         if frame is not None:
-            st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption=f"Frame {current_frame}", use_container_width=True)
-
-            # ⚡️ วาด hull overlay
             gaze_points_this_frame = []
             for x_norm, y_norm, t in gaze_data:
                 idx = (t / 1000 * fps).astype(int)
@@ -262,7 +261,10 @@ if st.session_state.data_processed:
                     gx = int(np.clip(x_norm[i], 0, 1) * (frame.shape[1] - 1))
                     gy = int(np.clip(y_norm[i], 0, 1) * (frame.shape[0] - 1))
                     gaze_points_this_frame.append((gx, gy))
-
+    
             draw_hulls_on_frame(gaze_points_this_frame, frame)
-
+    
+            # 🖼 ภาพวิดีโอปกติ (ไม่ต้องซ้ำ hull ซ้ำ)
+            st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption=f"Frame {current_frame}", use_container_width=True)
+    
         st.metric("Focus-Concentration Score", f"{df.loc[current_frame, 'F-C score']:.3f}")
