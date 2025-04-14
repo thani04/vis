@@ -168,67 +168,54 @@ if 'data_processed' not in st.session_state:
 if 'current_frame' not in st.session_state:
     st.session_state.current_frame = 0
 
+# วิดีโอและข้อมูลใน GitHub
+video_base_url = "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/Clips%20(small%20size)/"
+mat_base_url = "https://raw.githubusercontent.com/thani04/InfoVisual/main/clips_folder/"
 
-# Display analysis
-if st.session_state.data_processed:
-    csv_path = st.session_state.get('csv_path')
-    if csv_path and os.path.exists(csv_path) and os.path.getsize(csv_path) > 0:
-        df = pd.read_csv(csv_path, index_col='Frame')
+video_names = [
+    "APPAL_2a", "SIMPS_9a", "SIMPS_19a", "FOODI_2a",
+    "MARCH_12a", "Cloud_17a", "SHREK_3a", "DEEPB_3a", "NANN_3a"
+]
+
+# UI dropdown
+selected_video = st.selectbox("เลือกวิดีโอ", video_names)
+
+# สร้างชื่อไฟล์
+mp4_filename = f"{selected_video}_c.mp4"
+mat_filename = f"{selected_video}.mat"
+
+# เตรียมโฟลเดอร์เก็บไฟล์
+temp_dir = "temp_data"
+os.makedirs(temp_dir, exist_ok=True)
+
+# โหลดไฟล์
+def download_file(url, save_path):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(save_path, 'wb') as f:
+            f.write(response.content)
     else:
-        st.error("❌ Could not load the data. Please upload files and run the analysis again.")
+        st.error(f"❌ ไม่สามารถโหลดไฟล์จาก {url}")
         st.stop()
 
-    video_frames = st.session_state.video_frames
-    current_frame = st.session_state.current_frame
-    min_frame, max_frame = int(df.index.min()), int(df.index.max())
-    frame_increment = 10
+with st.spinner("📥 กำลังโหลดวิดีโอและข้อมูลจาก GitHub..."):
+    # ดาวน์โหลดวิดีโอ
+    video_path = os.path.join(temp_dir, mp4_filename)
+    download_file(video_base_url + mp4_filename, video_path)
 
-    st.subheader("📊 Convex vs Concave Hull Area Over Time")
+    # ดาวน์โหลด .mat
+    mat_path = os.path.join(temp_dir, mat_filename)
+    download_file(mat_base_url + mat_filename, mat_path)
 
-    # Frame slider
-    new_frame = st.slider("Select Frame", min_frame, max_frame, current_frame)
-    st.session_state.current_frame = new_frame
+    # โหลดและประมวลผล
+    gaze_data = load_gaze_data([mat_path])
+    df, video_frames = process_video_analysis(gaze_data, video_path)
 
-    # Navigation buttons
-    col1, col2, col3 = st.columns([1, 4, 1])
-    with col1:
-        if st.button("Previous <10"):
-            st.session_state.current_frame = max(min_frame, st.session_state.current_frame - frame_increment)
-    with col3:
-        if st.button("Next >10"):
-            st.session_state.current_frame = min(max_frame, st.session_state.current_frame + frame_increment)
-
-    current_frame = st.session_state.current_frame
-
-    # Prepare data for Altair chart
-    df_melt = df.reset_index().melt(id_vars='Frame', value_vars=[
-        'Convex Area (Rolling Avg)', 'Concave Area (Rolling Avg)'
-    ], var_name='Metric', value_name='Area')
-
-    chart = alt.Chart(df_melt).mark_line().encode(
-        x='Frame',
-        y='Area',
-        color=alt.Color(
-        'Metric:N',
-        scale=alt.Scale(
-            domain=['Convex Area (Rolling Avg)', 'Concave Area (Rolling Avg)'],
-            range=['rgb(0, 210, 0)', 'rgb(0, 200, 255)']
-        ),
-        legend=alt.Legend(orient='bottom', title='Hull Type')
-    )
-    ).properties(
-        width=500,
-        height=300
-    )
-
-    rule = alt.Chart(pd.DataFrame({'Frame': [current_frame]})).mark_rule(color='red').encode(x='Frame')
-
-    col_chart, col_right = st.columns([2, 1])
-
-    with col_chart:
-        st.altair_chart(chart + rule, use_container_width=True)
-
-    with col_right:
-        frame_rgb = cv2.cvtColor(video_frames[current_frame], cv2.COLOR_BGR2RGB)
-        st.image(frame_rgb, caption=f"Frame {current_frame}", use_container_width=True)
-        st.metric("Focus-Concentration Score", f"{df.loc[current_frame, 'F-C score']:.3f}")
+    if df is not None:
+        st.session_state.df = df
+        st.session_state.video_frames = video_frames
+        st.session_state.csv_path = os.path.join(temp_dir, "analysis.csv")
+        df.to_csv(st.session_state.csv_path)
+        st.session_state.data_processed = True
+        st.session_state.current_frame = int(df.index.min())
+        st.success("✅ โหลดและประมวลผลเสร็จแล้ว")
