@@ -1,17 +1,15 @@
 import os
-import math
 import cv2
 import numpy as np
 import pandas as pd
 import scipy.io
 import streamlit as st
 import altair as alt
+import requests
 from scipy.spatial import ConvexHull
 import alphashape
-from shapely.geometry import MultiPoint
-import requests
 
-# วิดีโอใน GitHub
+# ========== CONFIG ==========
 video_files = {
     "APPAL_2a": "APPAL_2a_c.mp4",
     "SIMPS_9a": "SIMPS_9a_c.mp4",
@@ -23,26 +21,44 @@ video_files = {
     "DEEPB_3a": "DEEPB_3a_c.mp4",
     "NANN_3a": "NANN_3a_c.mp4"
 }
-base_url = "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/Clips%20(small%20size)/"
 
-st.title("🎬 Play Video from GitHub")
+video_base_url = "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/Clips%20(small%20size)/"
+mat_folder_base_api = "https://api.github.com/repos/nutteerabn/InfoVisual/contents/clips_folder"
 
-# 🔧 ✅ ใช้ key ป้องกัน element ซ้ำ
-selected_video_for_play = st.selectbox("เลือกวิดีโอ", list(video_files.keys()), key="video_player")
-video_url = base_url + video_files[selected_video_for_play]
-st.video(video_url)
+# ========== FUNCTIONS ==========
 
-# --- ฟังก์ชันโหลด .mat และวิดีโอจาก GitHub ---
 def download_file(url, save_path):
     response = requests.get(url)
     if response.status_code == 200:
         with open(save_path, 'wb') as f:
             f.write(response.content)
     else:
-        st.error(f"❌ ไม่สามารถโหลดไฟล์จาก {url}")
+        st.error(f"❌ Failed to download: {url}")
         st.stop()
 
-# --- Helper Functions ---
+def list_mat_files_from_github(video_name):
+    api_url = f"{mat_folder_base_api}/{video_name}"
+    response = requests.get(api_url)
+    if response.status_code != 200:
+        st.error(f"❌ Cannot fetch .mat list from GitHub. Status code: {response.status_code}")
+        st.stop()
+    file_list = response.json()
+    return [f["download_url"] for f in file_list if f["name"].endswith(".mat")]
+
+def download_multiple_mats(mat_urls, temp_dir):
+    mat_paths = []
+    for url in mat_urls:
+        file_name = os.path.basename(url)
+        save_path = os.path.join(temp_dir, file_name)
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(save_path, 'wb') as f:
+                f.write(response.content)
+            mat_paths.append(save_path)
+        else:
+            st.warning(f"⚠️ Failed to download {file_name}")
+    return mat_paths
+
 @st.cache_data
 def load_gaze_data(mat_files):
     gaze_data_per_viewer = []
@@ -127,33 +143,32 @@ def process_video_analysis(gaze_data_per_viewer, video_path, alpha=0.007, window
     df['F-C score'] = df['F-C score'].fillna(0)
     return df, video_frames
 
-# --- Gaze Analysis UI ---
+# ========== UI ==========
 st.title("🎯 Gaze & Hull Analysis Tool")
+
+video_names = list(video_files.keys())
+selected_video = st.selectbox("เลือกวิดีโอ", video_names)
+
+mp4_filename = video_files[selected_video]
+video_url = video_base_url + mp4_filename
+
+temp_dir = "temp_data"
+os.makedirs(temp_dir, exist_ok=True)
 
 if 'data_processed' not in st.session_state:
     st.session_state.data_processed = False
 if 'current_frame' not in st.session_state:
     st.session_state.current_frame = 0
 
-video_base_url = "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/Clips%20(small%20size)/"
-mat_base_url = "https://raw.githubusercontent.com/thani04/InfoVisual/main/clips_folder/"
-
-video_names = list(video_files.keys())
-selected_video = st.selectbox("เลือกวิดีโอ", video_names, key="video_analysis")  # ✅ key แตกต่างกัน
-
-mp4_filename = f"{selected_video}_c.mp4"
-mat_filename = f"{selected_video}.mat"
-temp_dir = "temp_data"
-os.makedirs(temp_dir, exist_ok=True)
-
-with st.spinner("📥 กำลังโหลดวิดีโอและข้อมูลจาก GitHub..."):
+# Download and process data
+with st.spinner("📥 กำลังโหลดวิดีโอและ .mat files จาก GitHub..."):
     video_path = os.path.join(temp_dir, mp4_filename)
-    mat_path = os.path.join(temp_dir, mat_filename)
+    download_file(video_url, video_path)
 
-    download_file(video_base_url + mp4_filename, video_path)
-    download_file(mat_base_url + mat_filename, mat_path)
+    mat_urls = list_mat_files_from_github(selected_video)
+    mat_paths = download_multiple_mats(mat_urls, temp_dir)
 
-    gaze_data = load_gaze_data([mat_path])
+    gaze_data = load_gaze_data(mat_paths)
     df, video_frames = process_video_analysis(gaze_data, video_path)
 
     if df is not None:
@@ -165,7 +180,7 @@ with st.spinner("📥 กำลังโหลดวิดีโอและข�
         st.session_state.current_frame = int(df.index.min())
         st.success("✅ โหลดและประมวลผลเสร็จแล้ว")
 
-# --- แสดงผลวิเคราะห์ ---
+# Display
 if st.session_state.data_processed:
     df = pd.read_csv(st.session_state.csv_path, index_col='Frame')
     video_frames = st.session_state.video_frames
@@ -174,6 +189,7 @@ if st.session_state.data_processed:
     frame_increment = 10
 
     st.subheader("📊 Convex vs Concave Hull Area Over Time")
+
     new_frame = st.slider("Select Frame", min_frame, max_frame, current_frame)
     st.session_state.current_frame = new_frame
 
@@ -202,10 +218,7 @@ if st.session_state.data_processed:
             ),
             legend=alt.Legend(orient='bottom', title='Hull Type')
         )
-    ).properties(
-        width=500,
-        height=300
-    )
+    ).properties(width=500, height=300)
 
     rule = alt.Chart(pd.DataFrame({'Frame': [current_frame]})).mark_rule(color='red').encode(x='Frame')
 
