@@ -9,6 +9,8 @@ import altair as alt
 from scipy.spatial import ConvexHull
 import alphashape
 from shapely.geometry import MultiPoint
+import requests
+
 
 # 🔗 วิดีโอใน GitHub: https://github.com/nutteerabn/InfoVisual/tree/main/Clips%20(small%20size)
 video_files = {
@@ -36,6 +38,39 @@ video_url = base_url + video_files[selected_video]
 
 # แสดงวิดีโอ
 st.video(video_url)
+
+
+def get_github_folder_contents(owner, repo, folder_path):
+    api_url = f"https://github.com/thani04/InfoVisual/tree/main/clips_folder"
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        st.error(f"❌ Failed to fetch folder contents from GitHub. Status code: {response.status_code}")
+        st.stop()
+
+def download_files_from_github(file_list, temp_dir):
+    mat_paths = []
+    video_path = None
+
+    for file_info in file_list:
+        download_url = file_info['download_url']
+        file_name = file_info['name']
+        file_path = os.path.join(temp_dir, file_name)
+
+        # ดาวน์โหลดไฟล์
+        response = requests.get(download_url)
+        if response.status_code == 200:
+            with open(file_path, 'wb') as f:
+                f.write(response.content)
+            if file_name.endswith('.mat'):
+                mat_paths.append(file_path)
+            elif file_name.endswith('.mp4'):
+                video_path = file_path
+        else:
+            st.warning(f"⚠️ Failed to download {file_name} from GitHub.")
+
+    return mat_paths, video_path
 
 
 
