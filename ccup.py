@@ -207,7 +207,7 @@ if st.session_state.data_processed:
     min_frame, max_frame = int(df.index.min()), int(df.index.max())
     frame_increment = 10
 
-    st.subheader("📊 Convex vs Concave Hull Area Over Time")
+    st.subheader("📊 Convex vs Concave Hull Area Per Frame")
     new_frame = st.slider("Select Frame", min_frame, max_frame, current_frame)
     st.session_state.current_frame = new_frame
     current_frame = st.session_state.current_frame
