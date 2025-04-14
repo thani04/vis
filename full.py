@@ -1,5 +1,4 @@
 import os
-import requests
 import cv2
 import numpy as np
 import pandas as pd
@@ -21,12 +20,19 @@ video_files = {
     "SIMPS_19a": "SIMPS_19a_hull_area.mp4"
 }
 base_url = "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/processed%20hull%20area%20overlay/"
-mat_base_api = "https://api.github.com/repos/nutteerabn/InfoVisual/contents/clips_folder/"
 
 # ----------------------------
-# Helper Functions
+# APP START
 # ----------------------------
+st.title("🎬 Gaze Hull Visualization")
 
+selected_video = st.selectbox("🎥 เลือกวิดีโอ", list(video_files.keys()))
+video_url = base_url + video_files[selected_video]
+st.video(video_url)
+
+# ----------------------------
+# Helper functions
+# ----------------------------
 @st.cache_data
 def load_gaze_data(mat_files):
     gaze_data_per_viewer = []
@@ -45,17 +51,6 @@ def load_gaze_data(mat_files):
         gaze_data_per_viewer.append((gaze_x_norm, gaze_y_norm, timestamps))
     return gaze_data_per_viewer
 
-@st.cache_data
-def get_mat_files_for_video(video_name):
-    api_url = f"{mat_base_api}{video_name}"
-    response = requests.get(api_url)
-    mat_files = []
-    if response.status_code == 200:
-        for file in response.json():
-            if file["name"].endswith(".mat"):
-                mat_files.append(file["download_url"])
-    return mat_files
-
 @st.cache_resource
 def process_video_analysis(gaze_data_per_viewer, video_path, alpha=0.007, window_size=20):
     cap = cv2.VideoCapture(video_path)
@@ -67,7 +62,10 @@ def process_video_analysis(gaze_data_per_viewer, video_path, alpha=0.007, window
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    frame_numbers, convex_areas, concave_areas, video_frames = [], [], [], []
+    frame_numbers = []
+    convex_areas = []
+    concave_areas = []
+    video_frames = []
 
     frame_num = 0
     while cap.isOpened():
@@ -121,43 +119,18 @@ def process_video_analysis(gaze_data_per_viewer, video_path, alpha=0.007, window
     return df, video_frames
 
 # ----------------------------
-# UI START
+# Process and UI rendering
 # ----------------------------
-st.title("🎬 Gaze Hull Visualization")
+# mock loading data result (use pre-processed CSV & video_frames for now)
+df = st.session_state.get("df", None)
+video_frames = st.session_state.get("video_frames", [])
 
-selected_video = st.selectbox("🎥 เลือกวิดีโอ", list(video_files.keys()))
+if df is not None and not df.empty:
+    min_frame = int(df.index.min())
+    max_frame = int(df.index.max())
+    st.subheader("\ud83d\udcca Convex vs Concave Hull Area Over Time")
 
-video_path = os.path.join("temp_data", video_files[selected_video])
-os.makedirs("temp_data", exist_ok=True)
-if not os.path.exists(video_path):
-    video_bytes = requests.get(base_url + video_files[selected_video]).content
-    with open(video_path, "wb") as f:
-        f.write(video_bytes)
-
-# Load associated .mat files
-mat_urls = get_mat_files_for_video(selected_video)
-mat_paths = []
-for url in mat_urls[:5]:  # จำกัดไว้ 5 ไฟล์ .mat
-    filename = os.path.basename(url)
-    local_path = os.path.join("temp_data", filename)
-    if not os.path.exists(local_path):
-        r = requests.get(url)
-        with open(local_path, "wb") as f:
-            f.write(r.content)
-    mat_paths.append(local_path)
-
-# Process analysis
-gaze_data = load_gaze_data(mat_paths)
-df, video_frames = process_video_analysis(gaze_data, video_path)
-
-# ----------------------------
-# DISPLAY RESULT
-# ----------------------------
-if df is not None:
-    current_frame = st.slider("Select Frame", int(df.index.min()), int(df.index.max()), 0)
-    min_frame, max_frame = int(df.index.min()), int(df.index.max())
-
-    st.subheader("📊 Convex vs Concave Hull Area Over Time")
+    current_frame = st.slider("Select Frame", min_value=min_frame, max_value=max_frame, value=min_frame)
 
     df_melt = df.reset_index().melt(id_vars='Frame', value_vars=[
         'Convex Area (Rolling Avg)', 'Concave Area (Rolling Avg)'
@@ -189,6 +162,7 @@ if df is not None:
             st.image(frame_rgb, caption=f"Frame {current_frame}", use_container_width=True)
             st.metric("Focus-Concentration Score", f"{df.loc[current_frame, 'F-C score']:.3f}")
 
+            # --- compactness box ---
             convex = df.loc[current_frame, 'Convex Area']
             concave = df.loc[current_frame, 'Concave Area']
             compactness = concave / convex if convex > 0 else 0
@@ -207,3 +181,5 @@ if df is not None:
                 f"</div>",
                 unsafe_allow_html=True
             )
+else:
+    st.warning("\u26a0\ufe0f ไม่พบข้อมูลสำหรับแสดงผล อาจเกิดจากการดาวน์โหลดผิดพลาด หรือ .mat ไม่มีข้อมูล valid")
