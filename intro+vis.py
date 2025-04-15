@@ -12,22 +12,30 @@ from scipy.spatial import ConvexHull
 import alphashape
 
 
+# Set page layout
 st.set_page_config(layout="wide")
+
+# Sidebar Navigation
+st.sidebar.title("📚 Navigation")
+st.sidebar.markdown("""
+- [1. What Captures Attention?](#what-captures-attention)
+- [2. How Do We Measure Focus?](#how-do-we-measure-focus)
+- [3. Focus-Concentration (F-C) Score](#focus-concentration-f-c-score)
+- [4. Visual Examples of Focus](#visual-examples-of-focus)
+- [5. Focus-Concentration Visualization](#focus-concentration-visualization)
+""", unsafe_allow_html=True)
+
+# Main Title
 st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
 
-import streamlit as st
+# Color themes
+COLOR_GROUP1 = "#ECF0F1"
+COLOR_GROUP2 = "#F8F3EF"
 
-st.set_page_config(layout="wide")
-st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
-
-# กำหนดโทนสีแบบจับคู่
-COLOR_GROUP1 = "#ECF0F1"   
-COLOR_GROUP2 = "#F8F3EF"   
-
-# SECTION 1: Hook
+# SECTION 1: What Captures Attention
+st.markdown("<h3 id='what-captures-attention'>📌 What Captures Attention?</h3>", unsafe_allow_html=True)
 st.markdown(f"""
 <div style="background-color: {COLOR_GROUP1}; padding: 20px; border-radius: 10px;">
-    <h3>📌 What Captures Attention?</h3>
     <p>
     Is the viewer’s attention firmly focused on key moments, or does it float, drifting between different scenes in search of something new?
     </p>
@@ -37,12 +45,10 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("---")
-
-# SECTION 2: Hull Concepts
+# SECTION 2: How Do We Measure Focus
+st.markdown("<h3 id='how-do-we-measure-focus'>📐 How Do We Measure Focus?</h3>", unsafe_allow_html=True)
 st.markdown(f"""
 <div style="background-color: {COLOR_GROUP1}; padding: 20px; border-radius: 10px;">
-    <h3>📐 How Do We Measure Focus?</h3>
     <p>
     We use geometric shapes to visualize how tightly the viewer’s gaze is grouped:
     </p>
@@ -58,41 +64,31 @@ col1, col2 = st.columns(2)
 with col1:
     st.image(
         "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/convex_concave_image.jpg",
-        caption="📊 Diagram: Convex vs Concave Hulls",width =320
+        caption="📊 Diagram: Convex vs Concave Hulls", width=320
     )
 with col2:
     st.image(
         "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/convex_concave_SIMPS_9a.gif",
         caption="🎥 Real Example: Gaze Boundaries Over Time"
     )
-st.markdown(f"""
-<div style="background-color: {COLOR_GROUP1}; padding: 20px; border-radius: 10px;">
-</div>
-""", unsafe_allow_html=True)
 
 # SECTION 3: F-C Score
+st.markdown("<h3 id='focus-concentration-f-c-score'>📊 Focus-Concentration (F-C) Score</h3>", unsafe_allow_html=True)
 st.markdown(f"""
 <div style="background-color: {COLOR_GROUP2}; padding: 20px; border-radius: 10px;">
-    <h3>📊 Focus-Concentration (F-C) Score</h3>
+    <div style="text-align: center;">
+        <img src="https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/formula_image.jpeg" 
+             alt="F-C Score Formula"
+             style="height: 100px; border-radius: 10px;"/>
+        <p><em>🧮 Area calculation using a rolling average across the last 20 frames</em></p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
-
-# Use HTML to control image height
-st.markdown(f"""
-<div style="text-align: center;">
-    <img src="https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/formula_image.jpeg" 
-         alt="🧮 Area calculation using a rolling average across the last 20 frames"
-         style="height: 100px; border-radius: 10px;"/>
-    <p><em>🧮 Area calculation using a rolling average across the last 20 frames</em></p>
-</div>
-""", unsafe_allow_html=True)
-
 
 # SECTION 4: Visual Examples
+st.markdown("<h3 id='visual-examples-of-focus'>🎥 Visual Examples of Focus</h3>", unsafe_allow_html=True)
 st.markdown(f"""
 <div style="background-color: {COLOR_GROUP2}; padding: 20px; border-radius: 10px;">
-    <h3>🎥 Visual Examples of Focus</h3>
-</div>
 """, unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
@@ -106,6 +102,7 @@ with col2:
     st.caption("Gaze jumps around, showing exploration or distraction.")
 
 st.markdown(f"""
+</div>
 <div style="background-color: {COLOR_GROUP2}; padding: 20px; border-radius: 10px; margin-top: 1em;">
     <p>You’ll see this visualized dynamically in the graph and overlays as you explore different segments of the video.</p>
 </div>
