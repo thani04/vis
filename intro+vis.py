@@ -197,6 +197,15 @@ if "df" in st.session_state:
     df = st.session_state.df
     frames = st.session_state.frames
     frame = st.slider("🎞️ Select Frame", int(df.index.min()), int(df.index.max()), st.session_state.frame)
+    # Sidebar info
+    with st.sidebar:
+        st.header("🎛️ Navigation Status")
+        st.write(f"📍 Current Frame: `{frame}` / {df.index.max()}")
+        
+        percent = int((frame / df.index.max()) * 100)
+        st.progress(percent / 100)
+        st.write(f"⏱️ Progress: **{percent}%**")
+
     col1, col2 = st.columns([2, 1])
     with col1:
         data = df.reset_index().melt(id_vars="Frame", value_vars=["Convex Area (Rolling)", "Concave Area (Rolling)"], var_name="Metric", value_name="Area")
