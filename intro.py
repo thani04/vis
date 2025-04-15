@@ -4,8 +4,8 @@ st.set_page_config(layout="wide")
 st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
 
 # กำหนดโทนสีแบบจับคู่
-COLOR_GROUP1 = "#fff8e1"   # สีอ่อนนวลสำหรับ Section 1 & 2
-COLOR_GROUP2 = "#e8f5e9"   # สีเขียวอ่อนสำหรับ Section 3 & 4
+COLOR_GROUP1 = "#CCFFFF"   # สีอ่อนนวลสำหรับ Section 1 & 2
+COLOR_GROUP2 = "#E6E6FA"   # สีเขียวอ่อนสำหรับ Section 3 & 4
 
 # SECTION 1: Hook
 st.markdown(f"""
