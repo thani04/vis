@@ -18,10 +18,13 @@ st.set_page_config(layout="wide")
 # Sidebar Navigation
 st.sidebar.title("📚 Navigation")
 st.sidebar.markdown("""
+### 📖 Introduction
 - [1. What Captures Attention?](#what-captures-attention)
 - [2. How Do We Measure Focus?](#how-do-we-measure-focus)
 - [3. Focus-Concentration (F-C) Score](#focus-concentration-f-c-score)
 - [4. Visual Examples of Focus](#visual-examples-of-focus)
+
+### 📊 Visualization
 - [5. Focus-Concentration Visualization](#focus-concentration-visualization)
 """, unsafe_allow_html=True)
 
@@ -107,6 +110,10 @@ st.markdown(f"""
     <p>You’ll see this visualized dynamically in the graph and overlays as you explore different segments of the video.</p>
 </div>
 """, unsafe_allow_html=True)
+
+# Placeholder for Section 5 Visualization
+st.markdown("<h3 id='focus-concentration-visualization'>📊 Focus-Concentration Visualization</h3>", unsafe_allow_html=True)
+st.info("(Insert your interactive visualization here, such as video + gaze overlay and graphs)")
 
 
 # CONFIG
