@@ -1,11 +1,20 @@
 import streamlit as st
 
+# ตั้งค่า Layout
 st.set_page_config(layout="wide")
 st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
 
-# SECTION 1: Hook
-st.markdown("""
-<div style="background-color: #fff3e0; padding: 20px; border-radius: 10px;">
+# 🔧 กำหนดชุดสีสำหรับแต่ละ Section
+COLOR_HOOK = "#fff3e0"
+COLOR_HULL = "#e3f2fd"
+COLOR_SCORE = "#e8f5e9"
+COLOR_EXAMPLE = "#fce4ec"
+
+# -------------------------------
+# SECTION 1: Hook (Goal)
+# -------------------------------
+st.markdown(f"""
+<div style="background-color: {COLOR_HOOK}; padding: 20px; border-radius: 10px;">
     <h3>📌 What Captures Attention?</h3>
     <p>
     Is the viewer’s attention firmly focused on key moments, or does it float, drifting between different scenes in search of something new?
@@ -18,13 +27,13 @@ st.markdown("""
 
 st.markdown("---")
 
+# -------------------------------
 # SECTION 2: Hull Concepts
-st.markdown("""
-<div style="background-color: #e3f2fd; padding: 20px; border-radius: 10px;">
+# -------------------------------
+st.markdown(f"""
+<div style="background-color: {COLOR_HULL}; padding: 20px; border-radius: 10px;">
     <h3>📐 How Do We Measure Focus?</h3>
-    <p>
-    We use geometric shapes to visualize how tightly the viewer’s gaze is grouped:
-    </p>
+    <p>We use geometric shapes to visualize how tightly the viewer’s gaze is grouped:</p>
     <ul>
         <li><strong>Convex Hull</strong>: Encloses all gaze points loosely.</li>
         <li><strong>Concave Hull</strong>: Follows the actual shape of gaze, revealing true focus.</li>
@@ -45,9 +54,11 @@ with col2:
         caption="🎥 Real Example: Gaze Boundaries Over Time"
     )
 
+# -------------------------------
 # SECTION 3: F-C Score
-st.markdown("""
-<div style="background-color: #e8f5e9; padding: 20px; border-radius: 10px;">
+# -------------------------------
+st.markdown(f"""
+<div style="background-color: {COLOR_SCORE}; padding: 20px; border-radius: 10px;">
     <h3>📊 Focus-Concentration (F-C) Score</h3>
 </div>
 """, unsafe_allow_html=True)
@@ -69,9 +80,11 @@ st.markdown("""
 
 st.markdown("---")
 
+# -------------------------------
 # SECTION 4: Visual Examples
-st.markdown("""
-<div style="background-color: #fce4ec; padding: 20px; border-radius: 10px;">
+# -------------------------------
+st.markdown(f"""
+<div style="background-color: {COLOR_EXAMPLE}; padding: 20px; border-radius: 10px;">
     <h3>🎥 Visual Examples of Focus</h3>
 </div>
 """, unsafe_allow_html=True)
@@ -91,4 +104,3 @@ st.markdown("""
 You’ll see this visualized dynamically in the graph and overlays as you explore different segments of the video.
 </p>
 """, unsafe_allow_html=True)
-
