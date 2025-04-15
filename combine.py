@@ -10,6 +10,8 @@ from io import BytesIO
 from scipy.spatial import ConvexHull
 import alphashape
 
+st.set_page_config(page_title="Gaze Hull Visualizer", layout="wide")  
+
 st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
 
 with st.expander("📌 Goal of This Visualization", expanded=True):
@@ -49,7 +51,7 @@ with st.expander("🎥 Example: High vs Low F-C Score"):
     You can observe this difference visually in the graph and video overlays as you explore different frames.
     """)
 
-st.set_page_config(page_title="Gaze Hull Visualizer", layout="wide")
+# st.set_page_config(page_title="Gaze Hull Visualizer", layout="wide")
 
 # ----------------------------
 # CONFIG
