@@ -1,20 +1,15 @@
 import streamlit as st
 
-# ตั้งค่า Layout
 st.set_page_config(layout="wide")
 st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
 
-# 🔧 กำหนดชุดสีสำหรับแต่ละ Section
-COLOR_HOOK = "#fff3e0"
-COLOR_HULL = "#e3f2fd"
-COLOR_SCORE = "#e8f5e9"
-COLOR_EXAMPLE = "#fce4ec"
+# กำหนดโทนสีแบบจับคู่
+COLOR_GROUP1 = "#fff8e1"   # สีอ่อนนวลสำหรับ Section 1 & 2
+COLOR_GROUP2 = "#e8f5e9"   # สีเขียวอ่อนสำหรับ Section 3 & 4
 
-# -------------------------------
-# SECTION 1: Hook (Goal)
-# -------------------------------
+# SECTION 1: Hook
 st.markdown(f"""
-<div style="background-color: {COLOR_HOOK}; padding: 20px; border-radius: 10px;">
+<div style="background-color: {COLOR_GROUP1}; padding: 20px; border-radius: 10px;">
     <h3>📌 What Captures Attention?</h3>
     <p>
     Is the viewer’s attention firmly focused on key moments, or does it float, drifting between different scenes in search of something new?
@@ -27,13 +22,13 @@ st.markdown(f"""
 
 st.markdown("---")
 
-# -------------------------------
 # SECTION 2: Hull Concepts
-# -------------------------------
 st.markdown(f"""
-<div style="background-color: {COLOR_HULL}; padding: 20px; border-radius: 10px;">
+<div style="background-color: {COLOR_GROUP1}; padding: 20px; border-radius: 10px;">
     <h3>📐 How Do We Measure Focus?</h3>
-    <p>We use geometric shapes to visualize how tightly the viewer’s gaze is grouped:</p>
+    <p>
+    We use geometric shapes to visualize how tightly the viewer’s gaze is grouped:
+    </p>
     <ul>
         <li><strong>Convex Hull</strong>: Encloses all gaze points loosely.</li>
         <li><strong>Concave Hull</strong>: Follows the actual shape of gaze, revealing true focus.</li>
@@ -54,11 +49,9 @@ with col2:
         caption="🎥 Real Example: Gaze Boundaries Over Time"
     )
 
-# -------------------------------
 # SECTION 3: F-C Score
-# -------------------------------
 st.markdown(f"""
-<div style="background-color: {COLOR_SCORE}; padding: 20px; border-radius: 10px;">
+<div style="background-color: {COLOR_GROUP2}; padding: 20px; border-radius: 10px;">
     <h3>📊 Focus-Concentration (F-C) Score</h3>
 </div>
 """, unsafe_allow_html=True)
@@ -68,7 +61,7 @@ st.image(
     caption="🧮 Area calculation using a rolling average across the last 20 frames", width=900
 )
 
-st.markdown("""
+st.markdown(f"""
 <div style="background-color: #f1f8e9; padding: 15px; border-left: 5px solid #388e3c; margin-top: 10px;">
     <ul>
         <li><strong>Close to 1</strong> → tight gaze cluster → <span style="color:#2e7d32;"><strong>high concentration</strong></span></li>
@@ -80,11 +73,9 @@ st.markdown("""
 
 st.markdown("---")
 
-# -------------------------------
 # SECTION 4: Visual Examples
-# -------------------------------
 st.markdown(f"""
-<div style="background-color: {COLOR_EXAMPLE}; padding: 20px; border-radius: 10px;">
+<div style="background-color: {COLOR_GROUP2}; padding: 20px; border-radius: 10px;">
     <h3>🎥 Visual Examples of Focus</h3>
 </div>
 """, unsafe_allow_html=True)
