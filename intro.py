@@ -5,7 +5,7 @@ st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
 
 # กำหนดโทนสีแบบจับคู่
 COLOR_GROUP1 = "#DCDCDC"   
-COLOR_GROUP2 = "#FFF8DC"   
+COLOR_GROUP2 = "#fff8e1"   
 
 # SECTION 1: Hook
 st.markdown(f"""
