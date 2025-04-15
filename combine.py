@@ -12,46 +12,90 @@ import alphashape
 
 st.set_page_config(page_title="Gaze Hull Visualizer", layout="wide")  
 
-st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
+import streamlit as st
+import os
+import cv2
+import numpy as np
+import pandas as pd
+import requests
+import altair as alt
+import scipy.io
+from io import BytesIO
+from scipy.spatial import ConvexHull
+import alphashape
 
-with st.expander("📌 Goal of This Visualization", expanded=True):
+# Page config must go first
+st.set_page_config(page_title="Gaze Hull Visualizer", layout="wide")
+
+# Top header image
+st.image("conclip/Image.jpeg", use_container_width=True)
+
+# Tabs
+intro_tab, concept_tab, score_tab, example_tab = st.tabs([
+    "1. Visualization Goal",
+    "2. Convex & Concave Hull",
+    "3. F-C Score",
+    "4. Example: High vs Low F-C Score"
+])
+
+with intro_tab:
+    st.subheader("🎯 Goal of This Visualization")
     st.markdown("""
-    _Is the viewer’s attention firmly focused on key moments, or does it float, drifting between different scenes in search of something new?_
-
-    The goal of this visualization is to understand how viewers engage with a video by examining **where and how they focus their attention**. By comparing the areas where viewers look (represented by **convex and concave hulls**), the visualization highlights whether their attention stays focused on a specific part of the video or shifts around.
-
-    Ultimately, this helps us uncover **patterns of focus and exploration**, providing insights into how viewers interact with different elements of the video.
+    <blockquote style="font-size: 1.3em; text-align: center; font-weight: bold; font-style: italic; border-left: 4px solid #999; padding-left: 1em; margin: 1.5em 0;">
+        “Is the viewer’s attention firmly focused on key moments,<br>
+        or does it float, drifting between different scenes in search of something new?”
+    </blockquote>
+    """, unsafe_allow_html=True)
+    st.write("""
+    This visualization aims to reveal how viewers focus their gaze while watching video content. It analyzes where and how users visually engage, comparing convex and concave hulls over time to detect focused or scattered attention.
     """)
 
-with st.expander("📐 Explain Convex and Concave Concept"):
+with concept_tab:
+    st.subheader("📐 Convex & Concave Hull Concept")
+    st.write("To analyze visual attention, we enclose gaze points with geometric boundaries:")
     st.markdown("""
-    To analyze visual attention, we enclose gaze points with geometric boundaries:
+    <div style='padding: 0.5em; background-color: #e6f0ff; border-left: 4px solid #1e88e5; margin: 1em 0'>
+        <ul style='margin: 0; padding-left: 1.2em;'>
+            <li><strong>Convex Hull</strong>: Shows the outer boundary of all gaze points, like stretching a rubber band around them.</li>
+            <li><strong>Concave Hull</strong>: Fits tightly around actual gaze clusters, capturing internal gaps and curves.</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+    st.write("The difference between their areas reflects how focused or spread the gaze is.")
 
-    - **Convex Hull** wraps around all gaze points to show the overall extent of where viewers looked.
-    - **Concave Hull** creates a tighter boundary that closely follows the actual shape of the gaze pattern, adapting to gaps and contours in the data.
-
-    👉 **The difference in area between them reveals how dispersed or concentrated the viewers’ gaze is.**
-    """)
-
-with st.expander("📊 Focus-Concentration (F-C) Score"):
+with score_tab:
+    st.subheader("📊 Focus Concentration (F-C) Score")
+    st.write("FCS quantifies attention dispersion using the ratio of Concave to Convex hull areas.")
     st.markdown("""
-    The **Focus Concentration Score (FCS)** quantifies how focused or scattered a viewer’s attention is during the video:
+    <div style='padding: 0.7em; background-color: #f0f8ff; border-left: 5px solid #1976d2; margin: 1em 0; font-size: 1.05em'>
+        <ul style='margin: 0; padding-left: 1.2em;'>
+            <li><strong>Score close to 1.0</strong> → Gaze is concentrated → <span style="color:#2e7d32;"><strong>High focus</strong></span></li>
+            <li><strong>Score much lower</strong> → Gaze is dispersed → <span style="color:#d32f2f;"><strong>Exploration</strong></span></li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
-    - A score **close to 1** → gaze is tightly grouped → **high concentration**.
-    - A score **much lower than 1** → gaze is more spread out → **lower concentration / more exploration**.
-
-    It helps to measure whether attention is **locked onto a specific spot** or **wandering across the frame**.
-    """)
-
-with st.expander("🎥 Example: High vs Low F-C Score"):
+with example_tab:
+    st.subheader("🎬 Example: High vs Low F-C Score")
     st.markdown("""
-    - **High F-C Score**: The viewer’s gaze remains focused in one tight area, suggesting strong interest or attention.
-    - **Low F-C Score**: The gaze is scattered, moving across many regions of the screen, indicating exploration or distraction.
+    <div style='padding: 0.7em; background-color: #f9f9f9; border-left: 5px solid #90caf9; margin: 1em 0; font-size: 1.05em'>
+        <ul style='margin: 0; padding-left: 1.2em;'>
+            <li><strong>High F-C Score</strong>: Viewer fixates on a small region → <span style='color:#2e7d32'><strong>Strong interest</strong></span></li>
+            <li><strong>Low F-C Score</strong>: Gaze shifts across the screen → <span style='color:#c62828'><strong>Exploratory behavior</strong></span></li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
+    st.image("https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_high_F-C_score.gif", caption="High F-C Score", use_column_width=True)
+    st.image("https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_low_F-C_score.gif", caption="Low F-C Score", use_column_width=True)
 
-    You can observe this difference visually in the graph and video overlays as you explore different frames.
-    """)
+# Optional sections after the tabs
+st.markdown("---")
+st.subheader("5. Graph: Focus-Score over Time")
+st.write("📈 This section will include line charts comparing Convex vs Concave Hull areas over time, and their derived F-C Score.")
 
-# st.set_page_config(page_title="Gaze Hull Visualizer", layout="wide")
+# st.subheader("6. Summary Insight")
+# st.write("Summarize insights from graph or patterns observed across different video segments.")
+
 
 # ----------------------------
 # CONFIG
