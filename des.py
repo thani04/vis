@@ -34,7 +34,7 @@ with st.expander("📊 Focus-Concentration (F-C) Score"):
 
 with st.expander("🎥 Example: High vs Low F-C Score"):
     st.markdown("**High F-C Score**: The viewer’s gaze remains focused in one tight area, suggesting strong interest or attention.")
-    st.video("https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_high_F-C_score.mp4")
+    st.image("https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_high_F-C_score.gif")
 
     st.markdown("**Low F-C Score**: The gaze is scattered, moving across many regions of the screen, indicating exploration or distraction.")
     st.video("https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_low_F-C_score.mp4")
