@@ -4,8 +4,8 @@ st.set_page_config(layout="wide")
 st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
 
 # กำหนดโทนสีแบบจับคู่
-COLOR_GROUP1 = "#E0FFFF"   # สีอ่อนนวลสำหรับ Section 1 & 2
-COLOR_GROUP2 = "#fff3e0"   # สีเขียวอ่อนสำหรับ Section 3 & 4
+COLOR_GROUP1 = "#F0FFFF"   # สีอ่อนนวลสำหรับ Section 1 & 2
+COLOR_GROUP2 = "#FFFAFA"   # สีเขียวอ่อนสำหรับ Section 3 & 4
 
 # SECTION 1: Hook
 st.markdown(f"""
@@ -62,7 +62,7 @@ st.image(
 )
 
 st.markdown(f"""
-<div style="background-color: #fff3e0; padding: 15px; border-left: 5px solid #388e3c; margin-top: 10px;">
+<div style="background-color: #FFFAFA; padding: 15px; border-left: 5px solid #FFE4B5; margin-top: 10px;">
     <ul>
         <li><strong>Close to 1</strong> → tight gaze cluster → <span style="color:#2e7d32;"><strong>high concentration</strong></span></li>
         <li><strong>Much lower than 1</strong> → scattered gaze → <span style="color:#d32f2f;"><strong>low concentration</strong></span></li>
