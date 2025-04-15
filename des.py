@@ -31,13 +31,12 @@ with st.expander("📊 Focus-Concentration (F-C) Score"):
     It helps to measure whether attention is **locked onto a specific spot** or **wandering across the frame**.
     """)
 
-with st.expander("🎥 Example: High vs Low F-C Score"):
-    st.markdown("""
-    - **High F-C Score**: The viewer’s gaze remains focused in one tight area, suggesting strong interest or attention.
-    st.markdown("![High F-C Score](https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_high_F-C_score.mp4)")
-    
-    - **Low F-C Score**: The gaze is scattered, moving across many regions of the screen, indicating exploration or distraction.
-    st.markdown("![Low F-C Score](https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_low_F-C_score.mp4)")
 
-    You can observe this difference visually in the graph and video overlays as you explore different frames.
-    """)
+with st.expander("🎥 Example: High vs Low F-C Score"):
+    st.markdown("**High F-C Score**: The viewer’s gaze remains focused in one tight area, suggesting strong interest or attention.")
+    st.video("https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_high_F-C_score.mp4")
+
+    st.markdown("**Low F-C Score**: The gaze is scattered, moving across many regions of the screen, indicating exploration or distraction.")
+    st.video("https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_low_F-C_score.mp4")
+
+    st.markdown("You can observe this difference visually in the graph and video overlays as you explore different frames.")
