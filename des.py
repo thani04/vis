@@ -18,6 +18,8 @@ with st.expander("📐 Explain Convex and Concave Concept"):
     - **Convex Hull** wraps around all gaze points to show the overall extent of where viewers looked.
     - **Concave Hull** creates a tighter boundary that closely follows the actual shape of the gaze pattern, adapting to gaps and contours in the data.
 
+    st.image("https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/gif_sample/convex_concave_image.jpg")
+
     👉 **The difference in area between them reveals how dispersed or concentrated the viewers’ gaze is.**
     """)
 
@@ -27,7 +29,7 @@ with st.expander("📊 Focus-Concentration (F-C) Score"):
 
     - A score **close to 1** → gaze is tightly grouped → **high concentration**.
     - A score **much lower than 1** → gaze is more spread out → **lower concentration / more exploration**.
-
+    
     It helps to measure whether attention is **locked onto a specific spot** or **wandering across the frame**.
     """)
 
