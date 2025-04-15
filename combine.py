@@ -10,14 +10,11 @@ from io import BytesIO
 from scipy.spatial import ConvexHull
 import alphashape
 
-st.set_page_config(page_title="Gaze Hull Visualizer", layout="wide")
+st.set_page_config(page_title="Gaze Hull Visualizer", layout="wide")  
 
-# ----------------------------
-# INTRO SECTION
-# ----------------------------
 st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
 
-with st.expander("\ud83d\udccc Goal of This Visualization", expanded=True):
+with st.expander("📌 Goal of This Visualization", expanded=True):
     st.markdown("""
     _Is the viewer’s attention firmly focused on key moments, or does it float, drifting between different scenes in search of something new?_
 
@@ -26,17 +23,17 @@ with st.expander("\ud83d\udccc Goal of This Visualization", expanded=True):
     Ultimately, this helps us uncover **patterns of focus and exploration**, providing insights into how viewers interact with different elements of the video.
     """)
 
-with st.expander("\ud83d\udcd0 Explain Convex and Concave Concept"):
+with st.expander("📐 Explain Convex and Concave Concept"):
     st.markdown("""
     To analyze visual attention, we enclose gaze points with geometric boundaries:
 
     - **Convex Hull** wraps around all gaze points to show the overall extent of where viewers looked.
     - **Concave Hull** creates a tighter boundary that closely follows the actual shape of the gaze pattern, adapting to gaps and contours in the data.
 
-    \ud83d\udd20 **The difference in area between them reveals how dispersed or concentrated the viewers’ gaze is.**
+    👉 **The difference in area between them reveals how dispersed or concentrated the viewers’ gaze is.**
     """)
 
-with st.expander("\ud83d\udcca Focus-Concentration (F-C) Score"):
+with st.expander("📊 Focus-Concentration (F-C) Score"):
     st.markdown("""
     The **Focus Concentration Score (FCS)** quantifies how focused or scattered a viewer’s attention is during the video:
 
@@ -46,14 +43,15 @@ with st.expander("\ud83d\udcca Focus-Concentration (F-C) Score"):
     It helps to measure whether attention is **locked onto a specific spot** or **wandering across the frame**.
     """)
 
-with st.expander("\ud83c\udfa5 Example: High vs Low F-C Score"):
-    st.markdown("**High F-C Score**: The viewer’s gaze remains focused in one tight area, suggesting strong interest or attention.")
-    st.image("https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_high_F-C_score.gif")
+with st.expander("🎥 Example: High vs Low F-C Score"):
+    st.markdown("""
+    - **High F-C Score**: The viewer’s gaze remains focused in one tight area, suggesting strong interest or attention.
+    - **Low F-C Score**: The gaze is scattered, moving across many regions of the screen, indicating exploration or distraction.
 
-    st.markdown("**Low F-C Score**: The gaze is scattered, moving across many regions of the screen, indicating exploration or distraction.")
-    st.image("https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/gif_sample/FOODI_2a_low_F-C_score.gif")
+    You can observe this difference visually in the graph and video overlays as you explore different frames.
+    """)
 
-    st.markdown("You can observe this difference visually in the graph and video overlays as you explore different frames.")
+# st.set_page_config(page_title="Gaze Hull Visualizer", layout="wide")
 
 # ----------------------------
 # CONFIG
@@ -69,7 +67,7 @@ video_files = {
     "SUND_36a_POR": "SUND_36a_POR_hull_area.mp4",
 }
 
-base_video_url = "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/processed%20hull%20area%20overlay/"
+base_video_url = "https://github.com/nutteerabn/InfoVisual/tree/main/processed%20hull%20area%20overlay"
 user = "nutteerabn"
 repo = "InfoVisual"
 clips_folder = "clips_folder"
@@ -100,12 +98,11 @@ def load_gaze_data(user, repo, folder):
             y = record['y'][0, 0].flatten()
             t = record['t'][0, 0].flatten()
             valid = (x != -32768) & (y != -32768)
-            if valid.sum() > 0:
-                gaze_data.append({
-                    'x': x[valid] / np.max(x[valid]),
-                    'y': y[valid] / np.max(y[valid]),
-                    't': t[valid] - t[valid][0]
-                })
+            gaze_data.append({
+                'x': x[valid] / np.max(x[valid]),
+                'y': y[valid] / np.max(y[valid]),
+                't': t[valid] - t[valid][0]
+            })
     return [(d['x'], d['y'], d['t']) for d in gaze_data]
 
 @st.cache_data(show_spinner=True)
@@ -173,11 +170,11 @@ def analyze_gaze(gaze_data, video_path, alpha=0.007, window=20):
     return df, images
 
 # ----------------------------
-# UI: VIDEO SELECTION + PROCESSING
+# UI
 # ----------------------------
-st.title("\ud83c\udf1f Stay Focused or Float Away? : Focus-Concentration Analysis")
+st.title("🎯 Stay Focused or Float Away? : Focus-Concentration Analysis")
 
-selected_video = st.selectbox("\ud83c\udfa5 Select a video", list(video_files.keys()))
+selected_video = st.selectbox("🎬 Select a video", list(video_files.keys()))
 
 if selected_video:
     st.video(base_video_url + video_files[selected_video])
@@ -191,20 +188,17 @@ if selected_video:
             download_video(base_video_url + video_files[selected_video], video_filename)
 
         df, frames = analyze_gaze(gaze, video_filename)
-        if not df.empty:
-            st.session_state.df = df
-            st.session_state.frames = frames
-            st.session_state.frame = int(df.index.min())
-        else:
-            st.warning("\u26a0\ufe0f No valid data found in the .mat files for this video.")
+        st.session_state.df = df
+        st.session_state.frames = frames
+        st.session_state.frame = int(df.index.min())
 
 # ----------------------------
-# DISPLAY
+# Results
 # ----------------------------
-if "df" in st.session_state and not st.session_state.df.empty:
+if "df" in st.session_state:
     df = st.session_state.df
     frames = st.session_state.frames
-    frame = st.slider("\ud83c\udf9e\ufe0f Select Frame", int(df.index.min()), int(df.index.max()), st.session_state.frame)
+    frame = st.slider("🎞️ Select Frame", int(df.index.min()), int(df.index.max()), st.session_state.frame)
 
     col1, col2 = st.columns([2, 1])
     with col1:
