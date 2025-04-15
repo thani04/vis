@@ -1,17 +1,3 @@
-import os
-import cv2
-import numpy as np
-import pandas as pd
-import requests
-import streamlit as st
-import altair as alt
-import scipy.io
-from io import BytesIO
-from scipy.spatial import ConvexHull
-import alphashape
-
-st.set_page_config(page_title="Gaze Hull Visualizer", layout="wide")  
-
 import streamlit as st
 import os
 import cv2
