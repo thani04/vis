@@ -1,3 +1,19 @@
+import os
+import cv2
+import numpy as np
+import pandas as pd
+import requests
+import streamlit as st
+import streamlit.components.v1 as components
+import altair as alt
+import scipy.io
+from io import BytesIO
+from scipy.spatial import ConvexHull
+import alphashape
+
+
+# Set page layout
+st.set_page_config(layout="wide")
 
 # CONFIG
 video_files = {
