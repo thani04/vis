@@ -7,6 +7,4 @@ opencv-python-headless
 alphashape
 altair
 shapely
-os
-opencv-python
 requests
