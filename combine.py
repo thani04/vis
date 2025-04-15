@@ -67,7 +67,7 @@ video_files = {
     "SUND_36a_POR": "SUND_36a_POR_hull_area.mp4",
 }
 
-base_video_url = "https://raw.githubusercontent.com/nutteerabn/InfoVisual/main/processed%20hull%20area%20overlay/"
+base_video_url = "https://github.com/nutteerabn/InfoVisual/tree/main/processed%20hull%20area%20overlay"
 user = "nutteerabn"
 repo = "InfoVisual"
 clips_folder = "clips_folder"
