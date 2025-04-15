@@ -3,19 +3,14 @@ import streamlit as st
 st.set_page_config(layout="wide")
 st.title("🎯 Understanding Viewer Focus Through Gaze Visualization")
 
-# สีพื้นหลังสไตล์เดียวกัน
-BG_COLOR_1 = "#f7f7f7"
-BG_COLOR_2 = "#e9eef3"
-BG_COLOR_3 = "#f0f2f6"
-
 # SECTION 1: Hook
-st.markdown(f"""
-<div style="background-color: {BG_COLOR_1}; padding: 20px; border-radius: 10px;">
+st.markdown("""
+<div style="background-color: #fff3e0; padding: 20px; border-radius: 10px;">
     <h3>📌 What Captures Attention?</h3>
-    <p style="font-size: 1.05em;">
+    <p>
     Is the viewer’s attention firmly focused on key moments, or does it float, drifting between different scenes in search of something new?
     </p>
-    <p style="font-size: 1.05em;">
+    <p>
     This visualization explores how viewers engage with a video by examining <strong>where and how they focus their attention</strong>.
     </p>
 </div>
@@ -24,10 +19,10 @@ st.markdown(f"""
 st.markdown("---")
 
 # SECTION 2: Hull Concepts
-st.markdown(f"""
-<div style="background-color: {BG_COLOR_2}; padding: 20px; border-radius: 10px;">
+st.markdown("""
+<div style="background-color: #e3f2fd; padding: 20px; border-radius: 10px;">
     <h3>📐 How Do We Measure Focus?</h3>
-    <p style="font-size: 1.05em;">
+    <p>
     We use geometric shapes to visualize how tightly the viewer’s gaze is grouped:
     </p>
     <ul>
@@ -51,8 +46,8 @@ with col2:
     )
 
 # SECTION 3: F-C Score
-st.markdown(f"""
-<div style="background-color: {BG_COLOR_1}; padding: 20px; border-radius: 10px;">
+st.markdown("""
+<div style="background-color: #e8f5e9; padding: 20px; border-radius: 10px;">
     <h3>📊 Focus-Concentration (F-C) Score</h3>
 </div>
 """, unsafe_allow_html=True)
@@ -62,11 +57,11 @@ st.image(
     caption="🧮 Area calculation using a rolling average across the last 20 frames", width=900
 )
 
-st.markdown(f"""
-<div style="background-color: {BG_COLOR_3}; padding: 15px; border-left: 5px solid #90a4ae; margin-top: 10px;">
+st.markdown("""
+<div style="background-color: #f1f8e9; padding: 15px; border-left: 5px solid #388e3c; margin-top: 10px;">
     <ul>
-        <li><strong>Close to 1</strong> → tight gaze cluster → <strong>high concentration</strong></li>
-        <li><strong>Much lower than 1</strong> → scattered gaze → <strong>low concentration / more exploration</strong></li>
+        <li><strong>Close to 1</strong> → tight gaze cluster → <span style="color:#2e7d32;"><strong>high concentration</strong></span></li>
+        <li><strong>Much lower than 1</strong> → scattered gaze → <span style="color:#d32f2f;"><strong>low concentration</strong></span></li>
     </ul>
     <p>This metric reveals whether attention is <strong>locked in</strong> or <strong>wandering</strong>.</p>
 </div>
@@ -75,8 +70,8 @@ st.markdown(f"""
 st.markdown("---")
 
 # SECTION 4: Visual Examples
-st.markdown(f"""
-<div style="background-color: {BG_COLOR_2}; padding: 20px; border-radius: 10px;">
+st.markdown("""
+<div style="background-color: #fce4ec; padding: 20px; border-radius: 10px;">
     <h3>🎥 Visual Examples of Focus</h3>
 </div>
 """, unsafe_allow_html=True)
